@@ -83,8 +83,18 @@ def main():
     generate_csv_report(image_files)
     generate_html_report(image_files)
 
-    for image in image_files:
-        print(f"  - {image['path']} -> {image['new_name']}")
+    if args.rename:
+        print("Renaming files...")
+        for image in image_files:
+            new_path = image["path"].parent / image["new_name"]
+            try:
+                image["path"].rename(new_path)
+                print(f"  - Renamed {image['path']} to {new_path}")
+            except OSError as e:
+                print(f"Could not rename {image['path']}: {e}")
+    else:
+        for image in image_files:
+            print(f"  - {image['path']} -> {image['new_name']}")
 
 
 def generate_csv_report(image_files):
