@@ -93,7 +93,7 @@ def main():
     html_report_path = output_dir / f"report-{dir_name}.html"
 
     generate_csv_report(image_files, csv_report_path)
-    generate_html_report(image_files, html_report_path)
+    generate_html_report(image_files, html_report_path, args.rename)
 
     if args.rename:
         print("Renaming files...")
@@ -120,7 +120,7 @@ def generate_csv_report(image_files, report_path):
     print(f"Generated {report_path}")
 
 
-def generate_html_report(image_files, report_path):
+def generate_html_report(image_files, report_path, rename_active):
     """Generate an HTML report of the image files"""
     with open(report_path, "w") as f:
         f.write("""<!DOCTYPE html>
@@ -139,9 +139,20 @@ def generate_html_report(image_files, report_path):
         f.write("<thead class='thead-dark'><tr><th>Path</th><th>Name</th><th>X</th><th>Y</th><th>New Name</th><th>Image</th></tr></thead>\n")
         f.write("<tbody>\n")
         for image in image_files:
-            relative_image_path = os.path.relpath(image['path'], report_path.parent)
+            if image['name'] == image['new_name']:
+                continue
+
+            path_only = image['path'].parent
+            
+            if rename_active:
+                source_path = image['path'].parent / image['new_name']
+            else:
+                source_path = image['path']
+            
+            relative_image_path = os.path.relpath(source_path, report_path.parent)
+
             f.write(
-                f"<tr><td>{image['path']}</td><td>{image['name']}</td><td>{image['x']}</td><td>{image['y']}</td><td>{image['new_name']}</td>"
+                f"<tr><td>{path_only}</td><td>{image['name']}</td><td>{image['x']}</td><td>{image['y']}</td><td>{image['new_name']}</td>"
             )
             f.write(f"<td><img src='{relative_image_path}' width='100' class='img-fluid'></td></tr>\n")
         f.write("</tbody></table>\n")
@@ -149,6 +160,8 @@ def generate_html_report(image_files, report_path):
         f.write("<h2 class='mt-4'>Rename Commands</h2>\n")
         f.write("<textarea class='form-control' rows='10' readonly>\n")
         for image in image_files:
+            if image['name'] == image['new_name']:
+                continue
             f.write(f"mv '{image['path']}' '{image['path'].parent / image['new_name']}'\n")
         f.write("</textarea>\n")
         f.write("</div></body></html>\n")
