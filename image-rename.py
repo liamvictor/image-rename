@@ -58,11 +58,16 @@ def main():
 
         stem = Path(name).stem
         ext = Path(name).suffix
-
-        new_stem = f"{stem}-{x}-{y}".lower().replace("_", "-")
-        new_name = f"{new_stem}{ext}"
         
-        image["new_name"] = new_name
+        dimension_suffix = f"-{x}-{y}"
+
+        if stem.lower().endswith(dimension_suffix):
+            image["new_name"] = name
+        else:
+            new_stem = f"{stem}-{x}-{y}".lower().replace("_", "-")
+            new_name = f"{new_stem}{ext}"
+            image["new_name"] = new_name
+
 
     # Handle filename clashes
     new_filenames = {}
