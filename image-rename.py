@@ -134,10 +134,11 @@ def generate_html_report(image_files, report_path):
         f.write("<thead class='thead-dark'><tr><th>Path</th><th>Name</th><th>X</th><th>Y</th><th>New Name</th><th>Image</th></tr></thead>\n")
         f.write("<tbody>\n")
         for image in image_files:
+            relative_image_path = os.path.relpath(image['path'], report_path.parent)
             f.write(
                 f"<tr><td>{image['path']}</td><td>{image['name']}</td><td>{image['x']}</td><td>{image['y']}</td><td>{image['new_name']}</td>"
             )
-            f.write(f"<td><img src='{image['path']}' width='100' class='img-fluid'></td></tr>\n")
+            f.write(f"<td><img src='{relative_image_path}' width='100' class='img-fluid'></td></tr>\n")
         f.write("</tbody></table>\n")
 
         f.write("<h2 class='mt-4'>Rename Commands</h2>\n")
