@@ -139,12 +139,10 @@ def generate_html_report(image_files, report_path, rename_active):
         f.write("<thead class='thead-dark'><tr><th>Path</th><th>Name</th><th>X</th><th>Y</th><th>New Name</th><th>Image</th></tr></thead>\n")
         f.write("<tbody>\n")
         for image in image_files:
-            if image['name'] == image['new_name']:
-                continue
-
             path_only = image['path'].parent
+            new_name_cell = image['new_name'] if image['name'] != image['new_name'] else ""
             
-            if rename_active:
+            if rename_active and image['name'] != image['new_name']:
                 source_path = image['path'].parent / image['new_name']
             else:
                 source_path = image['path']
@@ -152,7 +150,7 @@ def generate_html_report(image_files, report_path, rename_active):
             relative_image_path = os.path.relpath(source_path, report_path.parent)
 
             f.write(
-                f"<tr><td>{path_only}</td><td>{image['name']}</td><td>{image['x']}</td><td>{image['y']}</td><td>{image['new_name']}</td>"
+                f"<tr><td>{path_only}</td><td>{image['name']}</td><td>{image['x']}</td><td>{image['y']}</td><td>{new_name_cell}</td>"
             )
             f.write(f"<td><img src='{relative_image_path}' width='100' class='img-fluid'></td></tr>\n")
         f.write("</tbody></table>\n")
